@@ -271,16 +271,16 @@ Client::leave()
 
 	m_active = false;
 
-	if (m_sendClipboardThread != NULL) {
-		StreamChunker::interruptClipboard();
-		m_sendClipboardThread->wait();
-		m_sendClipboardThread = NULL;
-	}
-
 	for (ClipboardID id = 0; id < kClipboardEnd; ++id) {
 		if (m_ownClipboard[id]) {
 			cacheClipboardData(id);
 		}
+	}
+
+	if (m_sendClipboardThread != NULL) {
+		StreamChunker::interruptClipboard();
+		m_sendClipboardThread->wait();
+		m_sendClipboardThread = NULL;
 	}
 
 	m_sendClipboardThread = new Thread(
