@@ -20,7 +20,7 @@
 
 #include "synergy/IClient.h"
 
-#include "synergy/IClipboard.h"
+#include "synergy/Clipboard.h"
 #include "synergy/DragInformation.h"
 #include "synergy/INode.h"
 #include "synergy/ClientArgs.h"
@@ -192,6 +192,7 @@ private:
 	void				handleStopRetry(const Event&, void*);
 	void				onFileRecieveCompleted();
 	void				sendClipboardThread(void*);
+	void				cacheClipboardData(ClipboardID id);
 
 public:
 	bool				m_mock;
@@ -223,4 +224,5 @@ private:
 	bool				m_useSecureNetwork;
 	ClientArgs&			m_args;
 	Thread*				m_sendClipboardThread;
+	Clipboard			m_clipboard[kClipboardEnd];
 };

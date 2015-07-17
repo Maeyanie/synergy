@@ -86,6 +86,7 @@ public:
 	virtual String		getName() const;
 	virtual synergy::IStream*
 						getStream() const = 0;
+	virtual void		sendClipboard(ClipboardID) = 0;
 
 private:
 	String				m_name;

@@ -44,6 +44,7 @@ public:
 							bool forScreensaver);
 	virtual bool		leave();
 	virtual void		setClipboard(ClipboardID, const IClipboard*);
+	virtual void		sendClipboard(ClipboardID id);
 	virtual void		grabClipboard(ClipboardID);
 	virtual void		setClipboardDirty(ClipboardID, bool);
 	virtual void		keyDown(KeyID, KeyModifierMask, KeyButton);

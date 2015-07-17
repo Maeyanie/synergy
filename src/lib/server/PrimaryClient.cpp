@@ -168,6 +168,12 @@ PrimaryClient::setClipboard(ClipboardID id, const IClipboard* clipboard)
 }
 
 void
+PrimaryClient::sendClipboard(ClipboardID id)
+{
+	// ignore
+}
+
+void
 PrimaryClient::grabClipboard(ClipboardID id)
 {
 	// grab clipboard

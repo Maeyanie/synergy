@@ -275,7 +275,18 @@ ClientProxy1_0::leave()
 void
 ClientProxy1_0::setClipboard(ClipboardID id, const IClipboard* clipboard)
 {
-	// ignore -- deprecated in protocol 1.0
+	// ignore if this clipboard is already clean
+	if (m_clipboard[id].m_dirty) {
+		// this clipboard is now clean
+		m_clipboard[id].m_dirty = false;
+		Clipboard::copy(&m_clipboard[id].m_clipboard, clipboard);
+	}
+}
+
+void
+ClientProxy1_0::sendClipboard(ClipboardID id)
+{
+	// not implemented
 }
 
 void

@@ -277,6 +277,12 @@ Client::leave()
 		m_sendClipboardThread = NULL;
 	}
 
+	for (ClipboardID id = 0; id < kClipboardEnd; ++id) {
+		if (m_ownClipboard[id]) {
+			cacheClipboardData(id);
+		}
+	}
+
 	m_sendClipboardThread = new Thread(
 								new TMethodJob<Client>(
 									this,
@@ -389,34 +395,20 @@ Client::getName() const
 void
 Client::sendClipboard(ClipboardID id)
 {
-	// note -- m_mutex must be locked on entry
-	assert(m_screen != NULL);
-	assert(m_server != NULL);
-
-	// get clipboard data.  set the clipboard time to the last
-	// clipboard time before getting the data from the screen
-	// as the screen may detect an unchanged clipboard and
-	// avoid copying the data.
-	Clipboard clipboard;
-	if (clipboard.open(m_timeClipboard[id])) {
-		clipboard.close();
-	}
-	m_screen->getClipboard(id, &clipboard);
-
 	// check time
 	if (m_timeClipboard[id] == 0 ||
-		clipboard.getTime() != m_timeClipboard[id]) {
+		m_clipboard[id].getTime() != m_timeClipboard[id]) {
 		// save new time
-		m_timeClipboard[id] = clipboard.getTime();
+		m_timeClipboard[id] = m_clipboard[id].getTime();
 
 		// marshall the data
-		String data = clipboard.marshall();
+		String data = m_clipboard[id].marshall();
 
 		// save and send data if different or not yet sent
 		if (!m_sentClipboard[id] || data != m_dataClipboard[id]) {
 			m_sentClipboard[id] = true;
 			m_dataClipboard[id] = data;
-			m_server->onClipboardChanged(id, &clipboard);
+			m_server->onClipboardChanged(id, &m_clipboard[id]);
 		}
 	}
 }
@@ -775,6 +767,23 @@ Client::sendClipboardThread(void*)
 			sendClipboard(id);
 		}
 	}
+}
+
+void
+Client::cacheClipboardData(ClipboardID id)
+{
+	// note -- m_mutex must be locked on entry
+	assert(m_screen != NULL);
+	assert(m_server != NULL);
+
+	// get clipboard data.  set the clipboard time to the last
+	// clipboard time before getting the data from the screen
+	// as the screen may detect an unchanged clipboard and
+	// avoid copying the data.
+	if (m_clipboard[id].open(m_timeClipboard[id])) {
+		m_clipboard[id].close();
+	}
+	m_screen->getClipboard(id, &m_clipboard[id]);
 }
 
 void
